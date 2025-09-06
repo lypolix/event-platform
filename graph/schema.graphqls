@@ -1,0 +1,37 @@
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  subscriptions: [Subscription!]!
+}
+
+type Event {
+  id: ID!
+  title: String!
+  description: String
+  dateTime: String!
+  organizer: User!
+  subscribers: [User!]!
+}
+
+type Subscription {
+  id: ID!
+  subscriber: User!
+  event: Event
+  subscribedToUser: User
+}
+
+type Query {
+  events: [Event!]!
+  event(id: ID!): Event
+  users: [User!]!
+  user(id: ID!): User
+}
+
+type Mutation {
+  createEvent(title: String!, description: String, dateTime: String!): Event!
+  createUser(name: String!, email: String!, password: String!): User!
+  subscribeToEvent(eventId: ID!): Subscription!
+  subscribeToUser(userId: ID!): Subscription!
+}
+
