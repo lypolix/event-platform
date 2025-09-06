@@ -101,134 +101,107 @@ go run ./cmd/event-platform
 ### Примеры GraphQL-запросов для тестирования
 
 #### 1. Создать пользователя
-
+```
 mutation {
-createUser(name: "Alice", email: "alice@example.com", password: "secret") {
-id
-name
-email
-createdAt
-}
-}
-text
-
-#### 2. Получить всех пользователей
-
-query {
-users {
-id
-name
-email
-createdAt
-subscriptions {
-id
-}
-}
-}
-text
-
-#### 3. Создать событие
-
-mutation {
-createEvent(
-title: "GraphQL Meetup"
-description: "Встреча для фанатов GraphQL"
-dateTime: "2025-09-07T18:00:00Z"
-) {
-id
-title
-description
-dateTime
-createdAt
-}
-}
-text
-
-#### 4. Получить список событий
-
-query {
-events {
-id
-title
-description
-dateTime
-createdAt
-organizer {
-name
-email
-}
-}
-}
-text
-
-#### 5. Получить пользователя по ID
-
-query {
-user(id: "ID_ПОЛЬЗОВАТЕЛЯ") {
-id
-name
-email
-createdAt
-}
-}
-text
-
-#### 6. Получить событие по ID
-
-query {
-event(id: "ID_СОБЫТИЯ") {
-id
-title
-description
-dateTime
-createdAt
-}
-}
-text
-
-#### 7. Подписаться на событие
-
-mutation {
-subscribeToEvent(eventId: "ID_СОБЫТИЯ") {
-id
-subscriber {
-id
-name
-}
-event {
-id
-title
-}
-}
-}
-text
-
-#### 8. Подписаться на пользователя
-
-mutation {
-subscribeToUser(userId: "ID_ДРУГОГО_ПОЛЬЗОВАТЕЛЯ") {
-id
-subscriber {
-id
-name
-}
-subscribedToUser {
-id
-name
-}
-}
-}
-text
-
-#### 9. Пример подписки (subscription) на нового пользователя
-````
-subscription {
-subscriber {
-id
-name
-email
-createdAt
-}
+  createUser(name: "John", email: "john@example.com", password: "secret123") {
+    id
+    name
+    email
+  }
 }
 ```
+
+#### 2. Получить всех пользователей
+```
+query {
+  users {
+    id
+    name
+    email
+  }
+}
+```
+
+#### 3. Создать событие
+```
+mutation {
+  createEvent(title: "Test Event", description: "For demo", dateTime: "2025-09-07T12:00:00Z") {
+    id
+    title
+    dateTime
+    description
+  }
+}
+```
+
+#### 4. Получить список событий
+```
+query {
+  events {
+    id
+    title
+    dateTime
+    description
+  }
+}
+```
+
+#### 5. Получить пользователя по ID
+```
+query {
+  user(id: "68bc58ba65f4d1add65e0469") {
+    id
+    name
+    email
+  }
+}
+```
+
+#### 6. Получить событие по ID
+```
+query {
+  event(id: "ID_СОБЫТИЯ") {
+    id
+    title
+    description
+    dateTime
+    createdAt
+  }
+}
+```
+
+#### 7. Подписаться на событие
+```
+mutation {
+  subscribeToEvent(eventId: "ID_СОБЫТИЯ") {
+    id
+    subscriber {
+      id
+      name
+    }
+    event {
+      id
+      title
+    }
+  }
+}
+```
+
+#### 8. Подписаться на пользователя
+```
+mutation {
+  subscribeToUser(userId: "ID_ДРУГОГО_ПОЛЬЗОВАТЕЛЯ") {
+    id
+    subscriber {
+      id
+      name
+    }
+    subscribedToUser {
+      id
+      name
+    }
+  }
+}
+```
+
 
