@@ -11,7 +11,7 @@ type UserService struct {
 }
 
 func (s *UserService) ListUsers(ctx context.Context) ([]*model.User, error) {
-	return s.Repo.GetAllUsers(ctx)
+	panic("unimplemented")
 }
 
 func NewUserService(repo *repository.UserRepository) *UserService {

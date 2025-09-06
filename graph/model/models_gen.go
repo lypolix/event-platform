@@ -2,10 +2,6 @@
 
 package model
 
-import "time"
-
-
-
 type Event struct {
 	ID          string  `json:"id"`
 	Title       string  `json:"title"`
@@ -13,7 +9,6 @@ type Event struct {
 	DateTime    string  `json:"dateTime"`
 	Organizer   *User   `json:"organizer"`
 	Subscribers []*User `json:"subscribers"`
-	CreatedAt   time.Time  `json:"createdAt" bson:"createdAt"`
 }
 
 type Mutation struct {
@@ -30,6 +25,4 @@ type User struct {
 	Name          string          `json:"name"`
 	Email         string          `json:"email"`
 	Subscriptions []*Subscription `json:"subscriptions"`
-	CreatedAt   time.Time  `json:"createdAt" bson:"createdAt"`
-
 }

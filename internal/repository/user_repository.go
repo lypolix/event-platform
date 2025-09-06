@@ -76,3 +76,24 @@ func (r *UserRepository) DeleteUser(ctx context.Context, id string) error {
     }
     return nil
 }
+
+func (r *UserRepository) GetAllUsers(ctx context.Context) ([]*model.User, error) {
+    cursor, err := r.Collection.Find(ctx, bson.D{})
+    if err != nil {
+        return nil, fmt.Errorf("failed to find users: %w", err)
+    }
+    defer cursor.Close(ctx)
+
+    var users []*model.User
+    for cursor.Next(ctx) {
+        var user model.User
+        if err := cursor.Decode(&user); err != nil {
+            return nil, fmt.Errorf("failed to decode user: %w", err)
+        }
+        users = append(users, &user)
+    }
+    if err := cursor.Err(); err != nil {
+        return nil, fmt.Errorf("cursor error: %w", err)
+    }
+    return users, nil
+}
