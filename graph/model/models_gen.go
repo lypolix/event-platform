@@ -18,7 +18,12 @@ type Query struct {
 }
 
 type Subscription struct {
+    ID              string  `json:"id"`
+    Subscriber      *User   `json:"subscriber"`
+    Event           *Event  `json:"event"`
+    SubscribedToUser *User  `json:"subscribedToUser"`
 }
+
 
 type User struct {
 	ID            string          `json:"id"`

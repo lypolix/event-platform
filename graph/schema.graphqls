@@ -19,6 +19,8 @@ type Subscription {
   subscriber: User!
   event: Event
   subscribedToUser: User
+  eventCreated: Event!
+  userCreated: User!
 }
 
 type Query {

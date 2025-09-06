@@ -10,87 +10,74 @@ import (
 	"fmt"
 )
 
-// Реализация мутаций
+// CreateEvent is the resolver for the createEvent field.
 func (r *mutationResolver) CreateEvent(ctx context.Context, title string, description *string, dateTime string) (*model.Event, error) {
-	event := &model.Event{
-		Title:       title,
-		Description: description,
-		DateTime:    dateTime,
-		// Организатора можно добавить по бизнес-логике
-	}
-	id, err := r.EventService.CreateEvent(ctx, event)
-	if err != nil {
-		return nil, err
-	}
-	event.ID = id
-	return event, nil
+	panic(fmt.Errorf("not implemented: CreateEvent - createEvent"))
 }
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, name string, email string, password string) (*model.User, error) {
-	user := &model.User{
-		Name:  name,
-		Email: email,
-		// Пароль можно захешировать, добавить в модель если нужно
-	}
-	id, err := r.UserService.CreateUser(ctx, user)
-	if err != nil {
-		return nil, err
-	}
-	user.ID = id
-	return user, nil
+	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
 }
 
 // SubscribeToEvent is the resolver for the subscribeToEvent field.
 func (r *mutationResolver) SubscribeToEvent(ctx context.Context, eventID string) (*model.Subscription, error) {
-	// Реализацию нужно доделать согласно вашей логике подписки
-	return nil, fmt.Errorf("SubscribeToEvent not implemented")
+	panic(fmt.Errorf("not implemented: SubscribeToEvent - subscribeToEvent"))
 }
 
 // SubscribeToUser is the resolver for the subscribeToUser field.
 func (r *mutationResolver) SubscribeToUser(ctx context.Context, userID string) (*model.Subscription, error) {
-	// Реализацию нужно доделать согласно вашей логике подписки
-	return nil, fmt.Errorf("SubscribeToUser not implemented")
+	panic(fmt.Errorf("not implemented: SubscribeToUser - subscribeToUser"))
 }
 
-// Реализация запросов
+// Events is the resolver for the events field.
 func (r *queryResolver) Events(ctx context.Context) ([]*model.Event, error) {
-	return r.EventService.ListEvents(ctx)
+	panic(fmt.Errorf("not implemented: Events - events"))
 }
 
 // Event is the resolver for the event field.
 func (r *queryResolver) Event(ctx context.Context, id string) (*model.Event, error) {
-	return r.EventService.GetEventByID(ctx, id)
+	panic(fmt.Errorf("not implemented: Event - event"))
 }
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	return r.UserService.ListUsers(ctx)
+	panic(fmt.Errorf("not implemented: Users - users"))
 }
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	return r.UserService.GetUserByID(ctx, id)
+	panic(fmt.Errorf("not implemented: User - user"))
 }
 
-// Заглушки подписок (если подписки не нужны, можно вернуть ошибку или nil)
+// ID is the resolver for the id field.
 func (r *subscriptionResolver) ID(ctx context.Context) (<-chan string, error) {
-	return nil, fmt.Errorf("not implemented")
+	panic(fmt.Errorf("not implemented: ID - id"))
 }
 
 // Subscriber is the resolver for the subscriber field.
 func (r *subscriptionResolver) Subscriber(ctx context.Context) (<-chan *model.User, error) {
-	return nil, fmt.Errorf("not implemented")
+	panic(fmt.Errorf("not implemented: Subscriber - subscriber"))
 }
 
 // Event is the resolver for the event field.
 func (r *subscriptionResolver) Event(ctx context.Context) (<-chan *model.Event, error) {
-	return nil, fmt.Errorf("not implemented")
+	panic(fmt.Errorf("not implemented: Event - event"))
 }
 
 // SubscribedToUser is the resolver for the subscribedToUser field.
 func (r *subscriptionResolver) SubscribedToUser(ctx context.Context) (<-chan *model.User, error) {
-	return nil, fmt.Errorf("not implemented")
+	panic(fmt.Errorf("not implemented: SubscribedToUser - subscribedToUser"))
+}
+
+// EventCreated is the resolver for the eventCreated field.
+func (r *subscriptionResolver) EventCreated(ctx context.Context) (<-chan *model.Event, error) {
+	panic(fmt.Errorf("not implemented: EventCreated - eventCreated"))
+}
+
+// UserCreated is the resolver for the userCreated field.
+func (r *subscriptionResolver) UserCreated(ctx context.Context) (<-chan *model.User, error) {
+	panic(fmt.Errorf("not implemented: UserCreated - userCreated"))
 }
 
 // Mutation returns MutationResolver implementation.

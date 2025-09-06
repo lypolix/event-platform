@@ -42,9 +42,17 @@ func main() {
     userService := service.NewUserService(userRepo)
     eventService := service.NewEventService(eventRepo)
 
+	subRepo := repository.NewSubscriptionRepository(db.Collection("subscriptions")) 
+	subscriptionService := service.NewSubscriptionService(
+		subRepo,
+		userRepo,
+		eventRepo,
+	)
+
     resolver := &graph.Resolver{
         UserService:  userService,
         EventService: eventService,
+		SubscriptionService: subscriptionService,
     }
 
     srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))

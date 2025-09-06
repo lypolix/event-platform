@@ -1,10 +1,9 @@
+
 package repository
 
 import (
     "context"
     "event-platform/graph/model"
-    "fmt"
-
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/bson/primitive"
     "go.mongodb.org/mongo-driver/mongo"
@@ -14,93 +13,74 @@ type EventRepository struct {
     Collection *mongo.Collection
 }
 
-func NewEventRepository(collection *mongo.Collection) *EventRepository {
-    return &EventRepository{Collection: collection}
+func NewEventRepository(col *mongo.Collection) *EventRepository {
+    return &EventRepository{Collection: col}
+}
+
+func (r *EventRepository) CreateEvent(ctx context.Context, event *model.Event) (string, error) {
+    res, err := r.Collection.InsertOne(ctx, event)
+    if err != nil {
+        return "", err
+    }
+    oid := res.InsertedID.(primitive.ObjectID)
+    return oid.Hex(), nil
 }
 
 func (r *EventRepository) GetAllEvents(ctx context.Context) ([]*model.Event, error) {
     cursor, err := r.Collection.Find(ctx, bson.D{})
     if err != nil {
-        return nil, fmt.Errorf("failed to find events: %w", err)
+        return nil, err
     }
     defer cursor.Close(ctx)
-
-    var events []*model.Event
+    var result []*model.Event
     for cursor.Next(ctx) {
-        var event model.Event
-        if err := cursor.Decode(&event); err != nil {
-            return nil, fmt.Errorf("failed to decode event: %w", err)
+        var evt model.Event
+        if err := cursor.Decode(&evt); err != nil {
+            return nil, err
         }
-        events = append(events, &event)
+        result = append(result, &evt)
     }
-
-    if err = cursor.Err(); err != nil {
-        return nil, fmt.Errorf("cursor error: %w", err)
-    }
-
-    return events, nil
+    return result, nil
 }
 
 func (r *EventRepository) GetEventByID(ctx context.Context, id string) (*model.Event, error) {
-    objID, err := primitive.ObjectIDFromHex(id)
-    if err != nil {
-        return nil, fmt.Errorf("invalid event ID: %w", err)
+    oid, _ := primitive.ObjectIDFromHex(id)
+    var evt model.Event
+    if err := r.Collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&evt); err != nil {
+        return nil, err
     }
-
-    var event model.Event
-    err = r.Collection.FindOne(ctx, bson.M{"_id": objID}).Decode(&event)
-    if err != nil {
-        return nil, fmt.Errorf("event not found: %w", err)
-    }
-
-    return &event, nil
-}
-
-// Создать новое событие
-func (r *EventRepository) CreateEvent(ctx context.Context, event *model.Event) (string, error) {
-    res, err := r.Collection.InsertOne(ctx, event)
-    if err != nil {
-        return "", fmt.Errorf("failed to create event: %w", err)
-    }
-
-    insertedID := res.InsertedID.(primitive.ObjectID).Hex()
-    return insertedID, nil
+    return &evt, nil
 }
 
 func (r *EventRepository) UpdateEvent(ctx context.Context, id string, updateData bson.M) error {
-    objID, err := primitive.ObjectIDFromHex(id)
+    oid, err := primitive.ObjectIDFromHex(id)
     if err != nil {
-        return fmt.Errorf("invalid event ID: %w", err)
+        return err
     }
-
-    filter := bson.M{"_id": objID}
+    filter := bson.M{"_id": oid}
     update := bson.M{"$set": updateData}
     res, err := r.Collection.UpdateOne(ctx, filter, update)
     if err != nil {
-        return fmt.Errorf("failed to update event: %w", err)
+        return err
     }
-
     if res.MatchedCount == 0 {
-        return fmt.Errorf("event not found")
+        return mongo.ErrNoDocuments
     }
-
     return nil
 }
 
 func (r *EventRepository) DeleteEvent(ctx context.Context, id string) error {
-    objID, err := primitive.ObjectIDFromHex(id)
+    oid, err := primitive.ObjectIDFromHex(id)
     if err != nil {
-        return fmt.Errorf("invalid event ID: %w", err)
+        return err
     }
-
-    res, err := r.Collection.DeleteOne(ctx, bson.M{"_id": objID})
+    res, err := r.Collection.DeleteOne(ctx, bson.M{"_id": oid})
     if err != nil {
-        return fmt.Errorf("failed to delete event: %w", err)
+        return err
     }
-
     if res.DeletedCount == 0 {
-        return fmt.Errorf("event not found")
+        return mongo.ErrNoDocuments
     }
-
     return nil
 }
+

@@ -1,45 +1,60 @@
 package service
 
 import (
-	"context"
-	"event-platform/graph/model"
-	"event-platform/internal/repository"
+    "context"
+    "event-platform/graph/model"
+    "event-platform/internal/repository"
+    "sync"
 )
 
 type UserService struct {
-	Repo *repository.UserRepository
-}
-
-func (s *UserService) ListUsers(ctx context.Context) ([]*model.User, error) {
-	panic("unimplemented")
+    Repo        *repository.UserRepository
+    subscribers []chan *model.User
+    mu          sync.Mutex
 }
 
 func NewUserService(repo *repository.UserRepository) *UserService {
-	return &UserService{Repo: repo}
+    return &UserService{Repo: repo}
 }
 
-// Получить пользователя по ID
+func (s *UserService) ListUsers(ctx context.Context) ([]*model.User, error) {
+    return s.Repo.GetAllUsers(ctx)
+}
+
 func (s *UserService) GetUserByID(ctx context.Context, id string) (*model.User, error) {
-	return s.Repo.GetUserByID(ctx, id)
+    return s.Repo.GetUserByID(ctx, id)
 }
 
-// Создать пользователя
+// Подписка на создание пользователя
+func (s *UserService) SubscribeToUsers(ch chan *model.User) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    s.subscribers = append(s.subscribers, ch)
+}
+
+// Метод для оповещения всех подписчиков о новом пользователе
+func (s *UserService) NotifyUserCreated(user *model.User) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    for _, sub := range s.subscribers {
+        sub <- user
+    }
+}
+
+// Создать пользователя (+ уведомление подписчиков)
 func (s *UserService) CreateUser(ctx context.Context, user *model.User) (string, error) {
-	// Можно добавить валидацию или бизнес-логику здесь
-	return s.Repo.CreateUser(ctx, user)
+    id, err := s.Repo.CreateUser(ctx, user)
+    if err != nil {
+        return "", err
+    }
+    s.NotifyUserCreated(user) // После успешного создания уведомляем подписчиков
+    return id, nil
 }
 
-// Обновить пользователя
 func (s *UserService) UpdateUser(ctx context.Context, id string, updateData map[string]interface{}) error {
-	// Преобразуем map в bson.M
-	bsonUpdate := make(map[string]interface{})
-	for k, v := range updateData {
-		bsonUpdate[k] = v
-	}
-	return s.Repo.UpdateUser(ctx, id, bsonUpdate)
+    return s.Repo.UpdateUser(ctx, id, updateData)
 }
 
-// Удалить пользователя
 func (s *UserService) DeleteUser(ctx context.Context, id string) error {
-	return s.Repo.DeleteUser(ctx, id)
+    return s.Repo.DeleteUser(ctx, id)
 }

@@ -9,4 +9,5 @@ import "event-platform/internal/service"
 type Resolver struct{
 	UserService  *service.UserService
     EventService *service.EventService
+	SubscriptionService *service.SubscriptionService
 }
